@@ -5,6 +5,8 @@ import { Country } from "api";
 type State = {
   //if give [], typescript will judge it is never
   countries: TCountry[];
+
+  getAllCountries: () => void;
 };
 
 //Don't change state by current state, use method like set or get to control state.
