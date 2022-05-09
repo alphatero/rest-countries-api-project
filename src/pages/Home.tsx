@@ -1,11 +1,22 @@
 import { Card } from "components";
+import { Country as TCountry } from "model";
+import { useEffect } from "react";
+import useStore from "state";
 
 export function Home() {
+  const countries: TCountry[] = useStore((state) => state.countries);
+
+  useEffect(() => {
+    // get countries
+  }, []);
+
+  console.log(countries);
+
   return (
     <form className="flex flex-col">
       <div>
         <Card>
-          <div className="min-h-[21rem]">
+          <div className="min-h-[22rem]">
             <figure className="h-40">
               <img src="https://flagcdn.com/w320/gm.png" alt="" />
             </figure>

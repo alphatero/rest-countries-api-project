@@ -1,7 +1,7 @@
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Header } from "components";
-import { Home } from "pages";
+import { Home, Detail } from "pages";
 
 function App() {
   return (
@@ -12,6 +12,10 @@ function App() {
         <div className="p-4 container mx-auto flex-1">
           <Routes>
             <Route path="/" element={<Home />} />
+
+            <Route path="/detail">
+              <Route path=":countryName" element={<Detail />} />
+            </Route>
           </Routes>
         </div>
       </main>
