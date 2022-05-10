@@ -1,8 +1,12 @@
 import { Country as TCountry } from "model";
-import { map } from "ramda";
+import { always, identity, map, memoizeWith } from "ramda";
 import { has, isString, isObject } from "utils";
 
-const API = "https://restcountries.com/v3.1/all";
+const HOST = "https://restcountries.com/v3.1/";
+
+function API(endpoint: string) {
+  return String(new globalThis.URL(endpoint, HOST));
+}
 
 function getNativeName(data: any): string[] {
   const results: string[] = [];
@@ -37,9 +41,9 @@ function getCurrencies(data: any): string[] {
   return results;
 }
 
-function get(): Promise<TCountry[]> {
+function get(endpoint: string): Promise<TCountry[]> {
   return (
-    fetch(API)
+    fetch(API(endpoint))
       .then((res) => res.json())
       //map T can accept two argument, first is from, second is return.
       .then(
@@ -60,5 +64,6 @@ function get(): Promise<TCountry[]> {
 }
 
 export const Country = {
-  get,
+  getAll: memoizeWith(always(""), () => get("all")),
+  getByName: memoizeWith(identity, (name: string) => get(`name/${name}`)),
 };
