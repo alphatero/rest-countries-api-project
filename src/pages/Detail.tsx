@@ -1,31 +1,61 @@
+/* eslint-disable @typescript-eslint/no-shadow */
 import { Back, Flag, List, Tag } from "components";
 import clsx from "clsx";
 import { useParams } from "react-router-dom";
 import useStore from "state";
 import { join } from "ramda";
 import { Format } from "utils";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 
 const format = join(", ");
 
 export function Detail() {
-  const { countryName } = useParams();
+  const { countryName: name } = useParams();
 
-  const country = useStore((state) =>
-    state.countries.find((tcountry) =>
-      tcountry.name.match(RegExp(`^${countryName}`, "i"))
+  const getCountryByName = useStore((state) => state.getCountryByName);
+  const getCountryBySubRegion = useStore(
+    (state) => state.getCountryBySubRegion
+  );
+
+  const country = useStore(
+    useCallback(
+      (state) =>
+        state.countries.find((country) =>
+          country.name.match(RegExp(`^${name}`, "i"))
+        ),
+      [name]
     )
   );
 
-  const getCountryByName = useStore((state) => state.getCountryByName);
+  const borderCountries = useStore(
+    useCallback(
+      (state) =>
+        !country
+          ? []
+          : state.countries
+              .filter(
+                ({ name, subRegion }) =>
+                  subRegion === country.subRegion && name !== country.name
+              )
+              .map(({ name }) => name),
+      [country]
+    )
+  );
 
   useEffect(() => {
-    if (country || !countryName) return;
+    if (!name || country) return;
 
-    getCountryByName(countryName);
-  }, [countryName, country, getCountryByName]);
+    getCountryByName(name);
+  }, [country, getCountryByName, name]);
+
+  useEffect(() => {
+    if (!name || !country) return;
+
+    getCountryBySubRegion(country.subRegion);
+  }, [getCountryBySubRegion, country, name]);
+
   return (
-    <div className="p-4 h-full flex flex-col justify-center">
+    <div className="p-4 h-full flex flex-col justify-center mt-20">
       <div className="relative flex flex-col gap-8">
         <div
           className={clsx(
@@ -52,7 +82,7 @@ export function Detail() {
               />
             </div>
 
-            <div className="flex-1 flex flex-col ">
+            <div className="flex-1 flex flex-col justify-center">
               <h2 className="text-2xl md:text-3xl font-bold md-4">
                 {country.name}
               </h2>
@@ -75,7 +105,7 @@ export function Detail() {
                     item={{
                       "Top Level Domain": format(country.topLevelDomain),
                       Currencies: format(country.currencies),
-                      Languages: format(country.language),
+                      Languages: format(country.languages),
                     }}
                   />
                 </div>
@@ -88,7 +118,7 @@ export function Detail() {
                   <h3>Border Countries: </h3>
 
                   <ul className="grid grid-cols-3 gap-2 font-light text-xs">
-                    {[].map((name) => (
+                    {borderCountries.map((name) => (
                       <li key={name}>
                         <Tag
                           className="md:min-w-[8rem]"

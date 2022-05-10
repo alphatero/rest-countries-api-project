@@ -16,9 +16,11 @@
     "ramda": "^0.28.0",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
+    "react-router": "^6.3.0",
     "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.1",
     "typescript": "^4.4.2",
+    "uuid": "^8.3.2",
     "web-vitals": "^2.1.0",
     "zustand": "^4.0.0-rc.1"
   },
@@ -50,6 +52,7 @@
   },
   "devDependencies": {
     "@types/ramda": "^0.28.12",
+    "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^5.22.0",
     "@typescript-eslint/parser": "^5.22.0",
     "autoprefixer": "^10.4.7",

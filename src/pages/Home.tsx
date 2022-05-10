@@ -1,29 +1,58 @@
 import clsx from "clsx";
-import { useEffect } from "react";
-import { Card, Country, Search, Select } from "components";
-import { Country as TCountry } from "model";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import { Card, Country, Search, Select, VirtualList } from "components";
 import useStore from "state";
 import { Link } from "react-router-dom";
 
+const Regions = ["Africa", "America", "Asia", "Europe", "Oceania"];
+
 export function Home() {
-  const countries: TCountry[] = useStore((state) => state.countries);
+  const [filtered, setFiltered] = useState("");
+  const [searched, setSearched] = useState("");
+
+  const countries = useStore(
+    useCallback(
+      (state) =>
+        state.countries
+          .filter(({ name }) => name.match(RegExp(`^${searched}`, "i")))
+          .filter(({ region }) => region.match(RegExp(`^${filtered}`, "i"))),
+      [searched, filtered]
+    )
+  );
   const getAllCountries = useStore((state) => state.getAllCountries);
 
   useEffect(() => {
     // get countries
-    getAllCountries();
+    void getAllCountries();
   }, [getAllCountries]);
 
-  console.log(countries);
+  const onChange = useCallback(
+    (event: ChangeEvent<HTMLFormElement>) => {
+      const { search, filter } = Object.fromEntries(
+        new FormData(event.currentTarget).entries()
+      );
+
+      setSearched(String(search));
+
+      setFiltered(Regions.includes(String(filter)) ? String(filter) : "");
+    },
+    [setFiltered, setSearched]
+  );
 
   return (
-    <form>
+    <form onChangeCapture={onChange}>
       <div className="flex flex-col md:flex-row md:h-14 gap-8 my-8 justify-between">
         <Card>
           <Search className="w-full lg:max-w-[32vw] py-2" />
         </Card>
 
-        <Select />
+        <Select
+          classes={{ wrapper: "w-full sm:w-[20rem]" }}
+          options={[
+            { label: "Filter by Region", value: "Filter by Region" },
+            ...Regions.map((label) => ({ label, value: label })),
+          ]}
+        />
       </div>
       <div className="hidden md:block">
         <ul
@@ -44,6 +73,29 @@ export function Home() {
           ))}
         </ul>
       </div>
+
+      <div className="sm:hidden">
+        <VirtualList
+          list={countries}
+          classes={{
+            wrapper: "max-h-[68vh] md:p-0 flex justify-center",
+            list: "flex flex-col",
+          }}
+          rowHeight={336}
+          visibleCount={2}
+          gap={40}
+        >
+          {(country) => (
+            <Link to={`/detail/${encodeURI(country.name)}`}>
+              <Card>
+                <Country {...country} />
+              </Card>
+            </Link>
+          )}
+        </VirtualList>
+      </div>
     </form>
   );
 }
+
+export default Home;
