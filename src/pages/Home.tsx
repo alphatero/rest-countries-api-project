@@ -1,8 +1,9 @@
 import clsx from "clsx";
 import { useEffect } from "react";
-import { Card, Country } from "components";
+import { Card, Country, Search, Select } from "components";
 import { Country as TCountry } from "model";
 import useStore from "state";
+import { Link } from "react-router-dom";
 
 export function Home() {
   const countries: TCountry[] = useStore((state) => state.countries);
@@ -17,7 +18,13 @@ export function Home() {
 
   return (
     <form>
-      <div className="flex flex-col md:flex-row md:h-14 gap-8 my-8 justify-between"></div>
+      <div className="flex flex-col md:flex-row md:h-14 gap-8 my-8 justify-between">
+        <Card>
+          <Search className="w-full lg:max-w-[32vw] py-2" />
+        </Card>
+
+        <Select />
+      </div>
       <div className="hidden md:block">
         <ul
           className={clsx(
@@ -28,9 +35,11 @@ export function Home() {
         >
           {countries.map((country) => (
             <li key={country.name}>
-              <Card>
-                <Country {...country} />
-              </Card>
+              <Link to={`/detail/${encodeURI(country.name)}`}>
+                <Card>
+                  <Country {...country} />
+                </Card>
+              </Link>
             </li>
           ))}
         </ul>

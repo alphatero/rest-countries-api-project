@@ -17,7 +17,7 @@ export function Country({
 }: CountryProps) {
   return (
     <div className={clsx("min-h-[22rem]", className)}>
-      <figure className="h-40">
+      <figure className="h-40 flex justify-center">
         <img src={flag} alt={`${name}'s flag`} />
       </figure>
 
