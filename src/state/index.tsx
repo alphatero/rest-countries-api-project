@@ -1,21 +1,9 @@
 import create from "zustand";
-import { Country as TCountry } from "model";
-import { Country } from "api";
+import Country from "./country";
+import { StateFromFunctions } from "./utils";
 
-type State = {
-  //if give [], typescript will judge it is never
-  countries: TCountry[];
+type State = StateFromFunctions<[typeof Country]>;
 
-  getAllCountries: () => void;
-};
-
-//Don't change state by current state, use method like set or get to control state.
-export default create<State>((set, get) => ({
-  countries: [],
-
-  getAllCountries: async () => {
-    //Fetch from API to get data back
-
-    Country.get().then((countries) => set({ countries }));
-  },
+export default create<State>((...args) => ({
+  ...Country(...args),
 }));

@@ -10,7 +10,7 @@ export function URL(
 
   for (const [key, value] of Object.entries(search)) {
     if (Array.isArray(value)) {
-      url.searchParams.append(key, value.join("."));
+      url.searchParams.append(key, value.join(","));
 
       continue;
     }

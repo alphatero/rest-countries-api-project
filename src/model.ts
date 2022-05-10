@@ -13,5 +13,5 @@ export interface Country {
   topLevelDomain: string[];
   currencies: string[];
 
-  language: string[];
+  languages: string[];
 }

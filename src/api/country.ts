@@ -1,13 +1,25 @@
 import { Country as TCountry } from "model";
-import { map } from "ramda";
+import { always, identity, map, memoizeWith } from "ramda";
 import { has, isString, isObject } from "utils";
+import { toJSON, URL } from "./base";
 
-const API = "https://restcountries.com/v3.1/all";
+const API = (endpoint: string) =>
+  URL(`https://restcountries.com/v3.1/${endpoint}`, {
+    fields: [
+      "name",
+      "flags",
+      "population",
+      "capital",
+      "region",
+      "tld",
+      "subregion",
+      "languages",
+      "currencies",
+    ],
+  });
 
 function getNativeName(data: any): string[] {
   const results: string[] = [];
-
-  if (!data) return results;
 
   for (const item of Object.values(data)) {
     if (
@@ -26,8 +38,6 @@ function getNativeName(data: any): string[] {
 function getCurrencies(data: any): string[] {
   const results: string[] = [];
 
-  if (!data) return results;
-
   for (const item of Object.values(data)) {
     if (isObject(item) && has("name", item) && isString(item.name)) {
       results.push(item.name);
@@ -37,28 +47,32 @@ function getCurrencies(data: any): string[] {
   return results;
 }
 
-function get(): Promise<TCountry[]> {
+function get(url: string) {
   return (
-    fetch(API)
-      .then((res) => res.json())
+    fetch(API(url))
+      .then(toJSON)
       //map T can accept two argument, first is from, second is return.
       .then(
         map<any, TCountry>((data) => ({
           name: data.name.common,
-          nativeName: getNativeName(data.name?.nativeName),
+          nativeName: getNativeName(data.name.nativeName),
           flag: data.flags.png,
           population: data.population,
           region: data.region,
           subRegion: data.subRegion,
-          capital: data.capital || [],
+          capital: data.capital,
           topLevelDomain: data.tld,
           currencies: getCurrencies(data.currencies),
-          language: Object.values(data.language || []),
+          languages: Object.values(data.languages),
         }))
       )
   );
 }
 
 export const Country = {
-  get,
+  getAll: memoizeWith(always(""), () => get("all")),
+  getByName: memoizeWith(identity, (name: string) => get(`name/${name}`)),
+  getBySubRegion: memoizeWith(identity, (subregion: string) =>
+    get(`subregion/${subregion}`)
+  ),
 };
