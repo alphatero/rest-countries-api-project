@@ -1,7 +1,10 @@
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Header } from "components";
-import { Home, Detail } from "pages";
+import { lazy, Suspense } from "react";
+
+const Home = lazy(() => import("@/pages/Home"));
+const Detail = lazy(() => import("@/pages/Detail"));
 
 function App() {
   return (
@@ -10,13 +13,15 @@ function App() {
         <Header />
 
         <div className="p-4 container mx-auto flex-1">
-          <Routes>
-            <Route path="/" element={<Home />} />
+          <Suspense fallback={<h2>loadingin</h2>}>
+            <Routes>
+              <Route path="/" element={<Home />} />
 
-            <Route path="/detail">
-              <Route path=":countryName" element={<Detail />} />
-            </Route>
-          </Routes>
+              <Route path="/detail">
+                <Route path=":countryName" element={<Detail />} />
+              </Route>
+            </Routes>
+          </Suspense>
         </div>
       </main>
     </BrowserRouter>
