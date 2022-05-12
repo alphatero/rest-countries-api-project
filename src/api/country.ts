@@ -3,8 +3,10 @@ import { always, identity, map, memoizeWith } from "ramda";
 import { has, isString, isObject } from "utils";
 import { toJSON, URL } from "./base";
 
+export const HOST = "https://restcountries.com/v3.1/";
+
 const API = (endpoint: string) =>
-  URL(`https://restcountries.com/v3.1/${endpoint}`, {
+  URL(`${HOST}${endpoint}`, {
     fields: [
       "name",
       "flags",
