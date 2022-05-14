@@ -1,12 +1,5 @@
-import fc from "fast-check";
 import { URL } from "../base";
 import { HOST } from "../country";
-
-// describe("funct toJSON", () => {
-//   test("input a data response, should return JSON object", () => {
-//     fc.assert(fc.property());
-//   });
-// });
 
 describe("func URL", () => {
   const fields = {
