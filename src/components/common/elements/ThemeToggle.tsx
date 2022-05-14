@@ -1,4 +1,4 @@
-import { Icon } from "@/components";
+import { Icon } from "components";
 
 const toggle = () => {
   const element = document.documentElement;
